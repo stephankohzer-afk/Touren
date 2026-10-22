@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hüttentouren</title>
+<meta name="description" content="Karten und GPX-Tracks von Hüttentouren in den Alpen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* One column of route cards; each card is a stage strip with key figures and links. */
+:root{
+  --bg:#eef2f4; --surface:#ffffff; --ink:#18242e; --muted:#5b6b78; --line:#cdd6dd; --trail:#c62f2a; --rock:#8a7a68;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#10171d;--surface:#18222a;--ink:#e6edf2;--muted:#93a4b1;--line:#2c3a45;--trail:#ff6b5f;--rock:#b3a491;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body);
+  padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);font-weight:700;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:2.4rem}
+h2{font-size:1.6rem}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--muted)}
+.blaze{display:inline-flex;vertical-align:middle;margin-right:10px;border-radius:2px;overflow:hidden}
+.blaze i{display:block;width:7px;height:22px;background:var(--trail)}
+.blaze i:nth-child(2){background:#fff;outline:1px solid var(--line)}
+p{margin:0;color:var(--muted);max-width:62ch}
+.tour{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 18px;font-family:var(--f-mono);font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.meta b{color:var(--ink);font-weight:500}
+.huts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.92rem}
+.huts span{padding:2px 8px;border:1px solid var(--line);border-radius:4px}
+.huts em{font-style:normal;color:var(--rock)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.actions a{font-family:var(--f-display);font-weight:600;font-size:1.05rem;letter-spacing:.02em;text-decoration:none;border-radius:6px;padding:7px 14px;border:1px solid var(--ink);color:var(--ink)}
+.actions a.primary{background:var(--ink);color:var(--bg)}
+.actions a:focus-visible{outline:3px solid var(--trail);outline-offset:2px}
+footer{font-size:.82rem;color:var(--muted)}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <div class="eyebrow">Karten · GPX · Alpen</div>
+    <h1><span class="blaze" aria-hidden="true"><i></i><i></i><i></i></span>Hüttentouren</h1>
+    <p>Wegverläufe aus OpenStreetMap, auf Topo-Karte gezeichnet. Die GPX-Dateien lassen sich in Komoot, Outdooractive, alpenvereinaktiv oder auf GPS-Uhren laden.</p>
+  </header>
+
+  <article class="tour">
+    <div class="eyebrow">Dolomiten · Rosengarten · Herbst 2026</div>
+    <h2>Rosengarten-Runde</h2>
+    <div class="meta"><span><b>5</b> Tage</span><span><b>3</b> Wandertage</span><span>ca. <b>32</b> km</span><span>höchster Punkt <b>3.004 m</b> (Kesselkogel)</span></div>
+    <div class="huts"><span>Kölner Hütte</span><em>→</em><span>Tierser Alpl</span><em>→</em><span>Antermoiahütte</span><em>→</em><span>Kölner Hütte</span></div>
+    <p>Rundtour ab Welschnofen über Santnerpass und Kesselkogel, mit Optionen für Roterdspitze, Ciaresole-Höhenweg und Laurenzi-Klettersteig.</p>
+    <div class="actions"><a class="primary" href="rosengarten/">Karte öffnen</a><a href="rosengarten/gpx/C_ALLE_Tracks_und_Wegpunkte.gpx" download>GPX (alle Tracks)</a></div>
+  </article>
+
+  <article class="tour">
+    <div class="eyebrow">Stubaier &amp; Ötztaler Alpen · DAV Bonn</div>
+    <h2>Hochstubai-Runde</h2>
+    <div class="meta"><span><b>6</b> Etappen</span><span><b>46</b> km</span><span>ca. <b>4.270</b> hm ↑</span><span>höchster Punkt <b>3.173 m</b></span></div>
+    <div class="huts"><span>Hochstubaihütte</span><em>→</em><span>Hildesheimer Hütte</span><em>→</em><span>Siegerlandhütte</span><em>→</em><span>Gh. Hochfirst</span><em>→</em><span>Brunnenkogelhaus</span></div>
+    <p>Hüttenrunde um das Windachtal mit Gletscherquerung, Abstecher nach Südtirol und Gratweg über die Wilde Rötespitze.</p>
+    <div class="actions"><a class="primary" href="hochstubai/">Karte öffnen</a><a href="hochstubai/hochstubai-runde.gpx" download>GPX</a></div>
+  </article>
+
+  <footer>Kartendaten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende (ODbL) · Kartenbild © <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA). Planungshilfe, kein Ersatz für AV-Karte und aktuelle Verhältnisse.</footer>
+</main>
+</body>
+</html>
