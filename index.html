@@ -4,111 +4,90 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Hüttentouren</title>
-<meta name="description" content="Karten und GPX-Tracks von Hüttentouren in den Alpen">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="description" content="Hüttentouren und Klettersteige mit Karte und GPX">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* One column of route cards; each card is a stage strip with key figures and links. */
-:root{
-  --bg:#eef2f4; --surface:#ffffff; --ink:#18242e; --muted:#5b6b78; --line:#cdd6dd; --trail:#c62f2a; --rock:#8a7a68;
-  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
-  --f-body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){:root{--bg:#10171d;--surface:#18222a;--ink:#e6edf2;--muted:#93a4b1;--line:#2c3a45;--trail:#ff6b5f;--rock:#b3a491;color-scheme:dark}}
+/* Entry page: title, category filter, grid of tiles. Category colour sits on the tile's left edge like a trail blaze. */
+:root{--bg:#eef2f4;--surface:#fff;--ink:#18242e;--muted:#5b6b78;--line:#cdd6dd;--trail:#c62f2a;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;--f-body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#10171d;--surface:#18222a;--ink:#e6edf2;--muted:#93a4b1;--line:#2c3a45;--trail:#ff6b5f;color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body);
-  padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
-main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-h1,h2{font-family:var(--f-display);font-weight:700;line-height:1.05;margin:0;text-wrap:balance}
-h1{font-size:2.4rem}
-h2{font-size:1.6rem}
-.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--muted)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body);padding:max(28px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+main{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-family:var(--f-display);font-weight:700;font-size:2.5rem;line-height:1;margin:0}
 .blaze{display:inline-flex;vertical-align:middle;margin-right:10px;border-radius:2px;overflow:hidden}
-.blaze i{display:block;width:7px;height:22px;background:var(--trail)}
+.blaze i{display:block;width:7px;height:24px;background:var(--trail)}
 .blaze i:nth-child(2){background:#fff;outline:1px solid var(--line)}
-p{margin:0;color:var(--muted);max-width:62ch}
-.tour{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
-.meta{display:flex;flex-wrap:wrap;gap:4px 18px;font-family:var(--f-mono);font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.meta b{color:var(--ink);font-weight:500}
-.huts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.92rem}
-.huts span{padding:2px 8px;border:1px solid var(--line);border-radius:4px}
-.huts em{font-style:normal;color:var(--rock)}
-.actions{display:flex;flex-wrap:wrap;gap:8px}
-.actions a{font-family:var(--f-display);font-weight:600;font-size:1.05rem;letter-spacing:.02em;text-decoration:none;border-radius:6px;padding:7px 14px;border:1px solid var(--ink);color:var(--ink)}
-.actions a.primary{background:var(--ink);color:var(--bg)}
-.actions a:focus-visible{outline:3px solid var(--trail);outline-offset:2px}
-.sec{font-size:1.1rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:8px}
-footer{font-size:.82rem;color:var(--muted)}
-footer a{color:inherit}
+.sub{color:var(--muted);margin:0}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{font:600 .92rem var(--f-body);display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.filters button i{width:10px;height:10px;border-radius:50%;background:var(--c,var(--ink))}
+.filters button[aria-pressed="true"]{border-color:var(--c,var(--ink));box-shadow:inset 0 0 0 1px var(--c,var(--ink))}
+.filters button:focus-visible,.tile:focus-visible{outline:3px solid var(--trail);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{display:flex;flex-direction:column;gap:3px;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:8px;padding:12px 14px 12px 12px;transition:transform .15s,box-shadow .15s}
+.tile:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.tile[data-cat="plan"]{border-left-style:dashed}
+.cat{font:600 .72rem var(--f-display);text-transform:uppercase;letter-spacing:.12em;color:var(--c)}
+.ttl{font:700 1.4rem/1.1 var(--f-display)}
+.where{font-size:.9rem;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;margin-top:6px;font:400 .8rem var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.st{color:var(--ink)}
+.tile[hidden]{display:none}
+footer{font-size:.8rem;color:var(--muted)} footer a{color:inherit}
+@media (prefers-reduced-motion:reduce){.tile{transition:none}}
 </style>
 </head>
 <body>
 <main>
   <header style="display:flex;flex-direction:column;gap:8px">
-    <div class="eyebrow">Karten · GPX · Alpen</div>
-    <h1><span class="blaze" aria-hidden="true"><i></i><i></i><i></i></span>Hüttentouren</h1>
-    <p>Gegangene Touren mit Garmin-Track, geplante mit Wegverlauf aus OpenStreetMap, alles auf Topo-Karte. Die GPX-Dateien lassen sich in Komoot, Outdooractive, alpenvereinaktiv oder auf GPS-Uhren laden.</p>
+    <h1><span class="blaze" aria-hidden="true"><i></i><i></i><i></i></span>Touren</h1>
+    <p class="sub">Hüttentouren und Klettersteige mit Karte und GPX zum Herunterladen.</p>
   </header>
-
-  <h2 class="sec">Gegangen 2026</h2>
-  <article class="tour">
-    <div class="eyebrow">Nationalpark Hohe Tauern · Schobergruppe · Juli 2026</div>
-    <h2>Hohe-Tauern-Runde</h2>
-    <div class="meta"><span><b>6</b> Tage</span><span><b>60,5</b> km</span><span><b>4.672</b> hm ↑</span><span>höchster Punkt <b>3.127 m</b></span></div>
-    <div class="huts"><span>Glorer Hütte</span><em>→</em><span>Elberfelder Hütte</span><em>→</em><span>Noßberger Hütte</span><em>→</em><span>Wangenitzseehütte</span><em>→</em><span>Hochschoberhütte</span></div>
-    <p>Von Kals bis St. Johann im Walde, mit Hornscharte und Gradenscharte.</p>
-    <div class="actions"><a class="primary" href="hohe-tauern/">Tour ansehen</a><a href="hohe-tauern/karte.html">Karte</a><a href="hohe-tauern/hohe-tauern-alle.gpx" download>GPX</a></div>
-  </article>
-  <article class="tour">
-    <div class="eyebrow">Sextener Dolomiten · Fanes-Sennes-Prags · August 2026</div>
-    <h2>Sextener-Dolomiten-Runde</h2>
-    <div class="meta"><span><b>6</b> Tage</span><span><b>77,6</b> km</span><span><b>4.466</b> hm ↑</span><span>höchster Punkt <b>2.818 m</b></span></div>
-    <div class="huts"><span>Zsigmondyhütte</span><em>→</em><span>Lavaredohütte</span><em>→</em><span>Plätzwiese</span><em>→</em><span>Senneshütte</span><em>→</em><span>Pragser Wildsee</span></div>
-    <p>Vom Fischleintal über die Drei Zinnen nach Sennes, mit Seekofel.</p>
-    <div class="actions"><a class="primary" href="sexten/">Karte öffnen</a><a href="sexten/sexten-alle.gpx" download>GPX</a></div>
-  </article>
-  <article class="tour">
-    <div class="eyebrow">Dolomiten · Rosengarten · Herbst 2026</div>
-    <h2>Rosengarten-Runde</h2>
-    <div class="meta"><span><b>4</b> Tage</span><span><b>37,9</b> km</span><span><b>3.518</b> hm ↑</span><span>höchster Punkt <b>2.894 m</b></span></div>
-    <div class="huts"><span>Kölner Hütte</span><em>→</em><span>Tierser Alpl</span><em>→</em><span>Antermoiahütte</span><em>→</em><span>Kölner Hütte</span></div>
-    <p>Rundtour ab Welschnofen über Santnerpass und Laurenzi-Klettersteig. Mit Planungskarte aller Varianten.</p>
-    <div class="actions"><a class="primary" href="rosengarten/">Karte öffnen</a><a href="rosengarten/rosengarten-alle.gpx" download>GPX</a></div>
-  </article>
-  <article class="tour">
-    <div class="eyebrow">Eifel · Schwarzwald · Dolomiten</div>
-    <h2>Klettersteige 2026</h2>
-    <div class="meta"><span><b>4</b> Steige</span><span>Schwierigkeit <b>B/C bis D</b></span><span>höchster Punkt <b>2.855 m</b></span></div>
-    <p>Burgenklettersteig Manderscheid, Santnerpass, Laurenzi-Klettersteig und Todtnau, mit Track und Höhenprofil.</p>
-    <div class="actions"><a class="primary" href="klettersteige/">Öffnen</a></div>
-  </article>
-  <article class="tour">
-    <div class="eyebrow">Vulkaneifel · August 2026</div>
-    <h2>Burgenklettersteig Manderscheid</h2>
-    <div class="meta"><span><b>1</b> Tag</span><span><b>3,7</b> km</span><span>Schwierigkeit <b>A–D</b></span></div>
-    <p>Drei Etappen an den Manderscheider Burgen mit Hängebrücke über die Lieser.</p>
-    <div class="actions"><a class="primary" href="manderscheid/">Öffnen</a><a href="manderscheid/manderscheid-alle.gpx" download>GPX</a></div>
-  </article>
-  <article class="tour">
-    <div class="eyebrow">Südschwarzwald · Oktober 2026</div>
-    <h2>Klettersteig Todtnau</h2>
-    <div class="meta"><span><b>1</b> Tag</span><span><b>5,8</b> km</span><span>Schwierigkeit <b>B/C</b></span></div>
-    <p>Schwimmbadfelsen mit Hängebrücke, nachmittags die Blackforestline bei Todtnauberg.</p>
-    <div class="actions"><a class="primary" href="todtnau/">Öffnen</a><a href="todtnau/todtnau-alle.gpx" download>GPX</a></div>
-  </article>
-  <h2 class="sec">Geplant</h2>
-  <article class="tour">
-    <div class="eyebrow">Stubaier &amp; Ötztaler Alpen · DAV Bonn</div>
-    <h2>Hochstubai-Runde</h2>
-    <div class="meta"><span><b>6</b> Etappen</span><span><b>46</b> km</span><span>ca. <b>4.270</b> hm ↑</span><span>höchster Punkt <b>3.173 m</b></span></div>
-    <div class="huts"><span>Hochstubaihütte</span><em>→</em><span>Hildesheimer Hütte</span><em>→</em><span>Siegerlandhütte</span><em>→</em><span>Gh. Hochfirst</span><em>→</em><span>Brunnenkogelhaus</span></div>
-    <p>Hüttenrunde um das Windachtal mit Gletscherquerung, Abstecher nach Südtirol und Gratweg über die Wilde Rötespitze.</p>
-    <div class="actions"><a class="primary" href="hochstubai/">Karte öffnen</a><a href="hochstubai/hochstubai-runde.gpx" download>GPX</a></div>
-  </article>
-
-  <footer>Kartendaten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende (ODbL) · Kartenbild © <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA). Keine Navigationshilfe, kein Ersatz für AV-Karte und aktuelle Verhältnisse.</footer>
+  <div class="filters" role="group" aria-label="Kategorie filtern"><button type="button" data-f="" aria-pressed="true"><i></i>Alle</button><button type="button" data-f="huette" style="--c:#c62f2a"><i></i>Hüttentour</button><button type="button" data-f="ks" style="--c:#d9822b"><i></i>Klettersteig</button><button type="button" data-f="plan" style="--c:#5b6b78"><i></i>Geplant</button></div>
+  <div class="grid" id="grid"><a class="tile" href="hohe-tauern/" data-cat="huette" style="--c:#c62f2a">
+  <span class="cat">Hüttentour</span>
+  <span class="ttl">Hohe Tauern</span>
+  <span class="where">Schobergruppe</span>
+  <span class="row"><span class="when">Juli 2026</span><span class="st">6 Tage · 60,5 km · 4.672 hm</span></span>
+</a><a class="tile" href="sexten/" data-cat="huette" style="--c:#c62f2a">
+  <span class="cat">Hüttentour</span>
+  <span class="ttl">Sextener Dolomiten</span>
+  <span class="where">Drei Zinnen · Sennes · Prags</span>
+  <span class="row"><span class="when">August 2026</span><span class="st">6 Tage · 77,6 km · 4.466 hm</span></span>
+</a><a class="tile" href="rosengarten/" data-cat="huette" style="--c:#c62f2a">
+  <span class="cat">Hüttentour</span>
+  <span class="ttl">Rosengarten</span>
+  <span class="where">Kölner Hütte · Tierser Alpl · Antermoia</span>
+  <span class="row"><span class="when">Sept./Okt. 2026</span><span class="st">4 Tage · 37,9 km · 3.518 hm</span></span>
+</a><a class="tile" href="klettersteige/" data-cat="ks" style="--c:#d9822b">
+  <span class="cat">Klettersteig</span>
+  <span class="ttl">Alle Klettersteige 2026</span>
+  <span class="where">Eifel · Schwarzwald · Dolomiten</span>
+  <span class="row"><span class="when">2026</span><span class="st">4 Steige · B/C bis D</span></span>
+</a><a class="tile" href="manderscheid/" data-cat="ks" style="--c:#d9822b">
+  <span class="cat">Klettersteig</span>
+  <span class="ttl">Burgenklettersteig Manderscheid</span>
+  <span class="where">Vulkaneifel</span>
+  <span class="row"><span class="when">August 2026</span><span class="st">A–D · 3,7 km</span></span>
+</a><a class="tile" href="todtnau/" data-cat="ks" style="--c:#d9822b">
+  <span class="cat">Klettersteig</span>
+  <span class="ttl">Klettersteig Todtnau</span>
+  <span class="where">Südschwarzwald</span>
+  <span class="row"><span class="when">Oktober 2026</span><span class="st">B/C · 5,8 km</span></span>
+</a><a class="tile" href="hochstubai/" data-cat="plan" style="--c:#5b6b78">
+  <span class="cat">Geplant</span>
+  <span class="ttl">Hochstubai</span>
+  <span class="where">Stubaier &amp; Ötztaler Alpen</span>
+  <span class="row"><span class="when">DAV Bonn</span><span class="st">6 Etappen · 46 km · 4.270 hm</span></span>
+</a></div>
+  <footer>Tracks aus Garmin bzw. OpenStreetMap · Kartendaten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende · keine Navigationshilfe.</footer>
 </main>
+<script>
+const bs=[...document.querySelectorAll(".filters button")],ts=[...document.querySelectorAll(".tile")];
+function f(v){bs.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.f===v)));ts.forEach(t=>t.hidden=!!v&&t.dataset.cat!==v);try{localStorage.setItem("touren-f",v)}catch(e){}}
+bs.forEach(b=>b.addEventListener("click",()=>f(b.dataset.f)));
+try{const v=localStorage.getItem("touren-f");if(v)f(v)}catch(e){}
+</script>
 </body>
 </html>
