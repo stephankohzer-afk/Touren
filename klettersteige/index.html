@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Klettersteige</title>
+<meta name="description" content="Gegangene Klettersteige 2026 mit Track, Schwierigkeit und Höhenprofil">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+/* Ladder of cards, ordered by date; one shared map zooms to the selected route. Grade badges follow the Schall scale A (easy) to E (extreme). */
+:root{--bg:#eef2f4;--surface:#fff;--ink:#18242e;--muted:#5b6b78;--line:#cdd6dd;--trail:#c62f2a;
+  --gA:#2f7d4f;--gB:#1f78b4;--gC:#d9822b;--gD:#c62f2a;--gE:#18242e;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;--f-body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#10171d;--surface:#18222a;--ink:#e6edf2;--muted:#93a4b1;--line:#2c3a45;--trail:#ff6b5f;--gE:#e6edf2;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body)}
+a{color:var(--trail)}
+.wrap{max-width:1100px;margin:0 auto;padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px;align-items:start}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}}
+header{grid-column:1/-1;display:flex;flex-direction:column;gap:8px}
+h1,h2{font-family:var(--f-display);font-weight:700;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:2.2rem} h2{font-size:1.3rem}
+p{margin:0}
+.eyebrow{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--muted)}
+.lead{color:var(--muted);max-width:65ch}
+#map{height:520px;border-radius:10px;border:1px solid var(--line);position:sticky;top:16px}
+@media (max-width:860px){#map{height:46vh;position:static}}
+.list{display:flex;flex-direction:column;gap:12px}
+.ks{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;grid-template-columns:56px minmax(0,1fr);gap:4px 14px;cursor:pointer}
+.ks.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.ks:focus-visible{outline:3px solid var(--trail);outline-offset:2px}
+.grade{grid-row:1/span 4;width:56px;height:56px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font:700 1.35rem var(--f-display);letter-spacing:.02em}
+.meta{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:2px 14px}
+.txt{font-size:.92rem}
+svg.prof{display:block;width:100%;height:46px;color:var(--muted)}
+.foot{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.86rem}
+.scale{display:flex;flex-wrap:wrap;gap:6px;font-size:.8rem;color:var(--muted);align-items:center}
+.scale b{display:inline-block;width:18px;height:18px;border-radius:4px;color:#fff;text-align:center;line-height:18px;font:700 .8rem var(--f-display)}
+.note{font-size:.8rem;color:var(--muted)}
+.lbl{background:rgba(255,255,255,.9);border:0;box-shadow:none;font:600 12px var(--f-body);color:#18242e;padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../" style="font-size:.88rem">← Alle Touren</a>
+    <div class="eyebrow">Gegangen 2026</div>
+    <h1>Klettersteige</h1>
+    <p class="lead">Vier Steige von der Eifel bis in den Rosengarten. Die Tracks stammen aus Garmin; bei Santnerpass und Laurenzi ist nur der Steigabschnitt aus der jeweiligen Tagesetappe ausgeschnitten.</p>
+    <div class="scale" aria-label="Schwierigkeitsskala"><span>Skala:</span><b style="background:var(--gA)">A</b>leicht <b style="background:var(--gB)">B</b>mäßig schwierig <b style="background:var(--gC)">C</b>schwierig <b style="background:var(--gD)">D</b>sehr schwierig</div>
+  </header>
+  <div id="map" role="region" aria-label="Karte der Klettersteige"></div>
+  <div class="list" id="list"></div>
+  <p class="note" style="grid-column:1/-1">Schwierigkeit nach Angaben der verlinkten Quellen. Karte © <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA), Daten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende.</p>
+</div>
+<script>
+const K=[{"key":"manderscheid","name":"Burgenklettersteig Manderscheid","area":"Vulkaneifel","date":"07.08.2026","grade":"A–D","top":"Burgen Manderscheid","text":"Drei Etappen (Lieser, Niederburg, Oberburg) an den Manderscheider Burgen, 60 m lange Hängebrücke über die Lieser, schwerste Stellen an der Niederburg. Helmpflicht.","tour":"../manderscheid/","src":["homeoftravel.de","https://homeoftravel.de/burgenklettersteig-manderscheid-lohnt-es-sich/"],"poly":"wzwpHiuqh@GNESNVQBJ?KPX?AHEEHJPMAIXeAd@_G\\y@H@D[JEDHEKHCERH?X_Ar@_@\\B?]`@Uf@DPP?KCZIALNHEQ?ANLFCNZh@?MTd@`Bf@ANP@@NVOAP^BIILQEGLD^[@QN?j@R?NNNBMJB@^HKKUI@FOANTBCTRm@Im@Ja@EeAi@y@OgAc@aABKt@SAQa@}@CPI@?QHPIADSMBXBQV@HGANWAXBKMIJGUFHFBKBRGMH?ECPH]IPCGCFKETJYTf@EO?_B|@kDj@[rBj@VIXNn@I@JBMGPFACGBNDEAPFMKBCVDCO\\o@PWISVWACt@IXEMGF@ONEMNT?k@HK]GxADh@nBxBHYSqAJq@v@aBfAc@`@aBPmBb@YxAQG]N}@`CjBl@EFl@ClAYf@MEH?IIFAALQTIO@JC[MJHDS@@a@I\\N?I@CNKWCN@}@Er@DIBFKJCUAL?IULAUc@DECBMAJ[F]h@YQQfAQ`@NJBMWT@SGTBWKJBQM^D_@YdA@YKIDMIFEMDGGNFb@GHLJENJ\\qA~AHIGHTPALJOCNHTh@LQPP?L`@VHAL|B@","ele":[313,312,313,322,322,322,313,316,314,307,314,308,311,312,312,308,309,316,308,311,312,311,316,319,312,309,303,303,303,301,301,300,304,311,311,328,328,325,323,332,343,359,363,384,357,351,348,338,331,327,321,316,314,311,306,295,295,293,297,297,297,295,303,296,299,300,307,298,299,301,297,306,303,314,314,322,322,347,357,357],"km":3.37,"max":387,"min":293,"gpx":"gpx/manderscheid.gpx","partial":false},{"key":"santnerpass","name":"Klettersteig Santnerpass","area":"Rosengarten, Dolomiten","date":"29.09.2026","grade":"B/C","top":"Santnerpass 2.734 m","text":"Verbindungssteig von der Kölner Hütte zur Santnerpasshütte, viele ungesicherte Passagen, Sicherung vor allem im oberen Drittel. Die Rinne oben kann bis in den Sommer Schnee und Eis halten.","tour":"../rosengarten/","src":["via-ferrata.de","https://www.via-ferrata.de/klettersteige/topo/klettersteig-santnerpass"],"poly":"_{mzG{|zeARmBJN@WP?GwAhAMHy@a@o@Ra@EScC_CuBqAyAyBm@eBkGkGqCAsBmBqAKmB{@cAIY_@iAIa@g@mEg@mAkA_CW]m@qACgC\\s@WyBtA}APQ[kAIQc@YRCUc@N_AUG_AAh@GQY`AMHc@i@","ele":[2335,2335,2339,2345,2348,2373,2373,2401,2411,2441,2444,2444,2444,2444,2457,2457,2457,2459,2459,2462,2462,2462,2462,2462,2462,2462,2462,2462,2462,2458,2458,2458,2455,2455,2455,2455,2442,2442,2434,2434,2426,2426,2430,2436,2454,2467,2467,2467,2467,2467,2515,2515,2526,2526,2526,2530,2536,2536,2546,2546,2546,2546,2586,2585,2585,2585,2629,2629,2650,2662,2662,2694,2705,2700,2700,2698,2724,2728,2731,2731],"km":1.89,"max":2748,"min":2335,"gpx":"gpx/santnerpass.gpx","partial":true},{"key":"laurenzi","name":"Laurenzi-Klettersteig","area":"Rosengarten, Dolomiten","date":"30.09.2026","grade":"D","top":"Innerer Molignon 2.852 m","text":"Gratüberschreitung des Molignon von der Tierser-Alpl-Seite, lange ungesicherte, ausgesetzte Gratstücke. Schlüsselstelle im Abstieg: rund 30 m senkrechte, leicht überhängende Wand. Abstieg über eine steile Geröllrinne ins Val Antermoia.","tour":"../rosengarten/","src":["via-ferrata.de","https://www.via-ferrata.de/klettersteige/topo/molignon-2852-m-laurenzi-klettersteig"],"poly":"ymwzGu_`fAx@mCCSfAgB^Qd@mA^IW{AQCDU]w@iA]Hk@f@a@B{@h@c@v@?f@YJg@b@]fBTxEyAzAIdA{AXkCb@a@?sAdAkDl@_@hA_CN_At@{AKOfBgBKqAjEkFh@oBfB[dDqCbAuAz@wC\\[n@MJNe@pBjAe@hAeB~A\\Di@JLf@c@j@uB`A_B@UvA_A","ele":[2588,2588,2588,2612,2612,2618,2617,2611,2603,2617,2620,2630,2645,2655,2677,2712,2712,2722,2731,2732,2732,2736,2736,2736,2736,2754,2754,2762,2762,2774,2774,2782,2784,2775,2775,2775,2763,2755,2755,2755,2747,2747,2739,2739,2737,2737,2757,2757,2757,2757,2757,2817,2821,2821,2821,2839,2839,2839,2855,2855,2855,2855,2855,2852,2841,2837,2809,2809,2788,2788,2780,2780,2702,2699,2690,2668,2668,2636,2630,2630],"km":2.23,"max":2855,"min":2579,"gpx":"gpx/laurenzi.gpx","partial":true},{"key":"todtnau","name":"Klettersteig Todtnau","area":"Südschwarzwald","date":"03.10.2026","grade":"B/C","top":"Schwimmbadfelsen 730 m","text":"Kurzer Steig am Schwimmbadfelsen mit Hängebrücke über eine kleine Schlucht, mehrere kombinierbare Varianten, die rechte bis C/D.","tour":"../todtnau/","src":["via-ferrata.de","https://www.via-ferrata.de/klettersteige/topo/klettersteig-todtnau"],"poly":"gh}bHm~qo@GHE[MNAe@KIGe@a@zA_@ROWNc@LNGSCJIOPDIB?VEINEEQTFGUI?JEIYHGBs@I_@I?DB?SCLAy@CGGFFDI`@JLKIDEBH?MDJLKEEJLCvAHJKb@FNKBUh@Bj@HQFNCWROP_AP[Jd@F?J~@IEHSFCFTJU\\sAEGBN?IHFMvBB|@e@tEJb@r@NLNObASl@{ArCShBHrBnChIpApHvDhL~BpI^|Br@vITrAhEfIjAlCJx@V^WEAW","ele":[717,725,733,738,750,759,762,764,772,778,783,793,793,796,794,781,776,771,762,757,756,753,742,735,726,719,716,715,714,713,713,713,709,707,709,709,709,709,709,709,708,706,706,706,706,706,699,699,699,699,691,691,691,691,691,691,691,681,681,681,681,681,673,673,671,671,671,671,658,657,657,657,657,657,657,653,653,650,650,651],"km":2.3,"max":796,"min":649,"gpx":"gpx/todtnau.gpx","partial":false}];
+const f0=n=>Math.round(n).toLocaleString("de-DE"),fmt=n=>n.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1});
+function dec(s){let i=0,v=[0,0];const o=[];while(i<s.length){for(let k=0;k<2;k++){let r=0,sh=0,b;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5}while(b>=32);v[k]+=(r&1)?~(r>>1):(r>>1);}o.push([v[0]/1e5,v[1]/1e5]);}return o;}
+const gc=g=>{const h=g.replace(/[^A-E]/g,"").slice(-1)||"A";return `var(--g${h})`;};
+const map=L.map("map",{zoomSnap:.25});
+const topo=L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:'© <a href="https://opentopomap.org">OpenTopoMap</a> · © <a href="https://www.openstreetmap.org/copyright">OSM</a>'}).addTo(map);
+const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:18,attribution:"Luftbild © Esri"});
+L.control.layers({"Topo":topo,"Luftbild":sat},null).addTo(map);L.control.scale({imperial:false}).addTo(map);
+const lines=[],mk=[];
+K.forEach((k,i)=>{k.pts=dec(k.poly);const col=getComputedStyle(document.documentElement).getPropertyValue(gc(k.grade).slice(4,-1)).trim();
+  lines.push(L.layerGroup([L.polyline(k.pts,{color:"#fff",weight:7,opacity:.85}),L.polyline(k.pts,{color:col,weight:4})]).addTo(map));
+  mk.push(L.circleMarker(k.pts[Math.floor(k.pts.length/2)],{radius:7,color:"#fff",weight:2,fillColor:col,fillOpacity:1}).addTo(map).bindTooltip(k.name,{direction:"top",className:"lbl"}).on("click",()=>document.querySelectorAll(".ks")[i].click()));});
+const list=document.getElementById("list");
+K.forEach((k,i)=>{const W=300,H=46,e=k.ele,mn=Math.min(...e),mx=Math.max(...e),r=Math.max(mx-mn,40);const x=j=>j/(e.length-1)*W,y=v=>3+(mx-v)/r*(H-8);
+  const d=e.map((v,j)=>(j?"L":"M")+x(j).toFixed(1)+","+y(v).toFixed(1)).join("");
+  const el=document.createElement("article");el.className="ks";el.tabIndex=0;
+  el.innerHTML=`<div class="grade" style="background:${gc(k.grade)}">${k.grade}</div>
+   <div class="eyebrow">${k.area} · ${k.date}</div><h2>${k.name}</h2>
+   <div class="meta"><span>${k.top}</span><span>${fmt(k.km)} km${k.partial?" (Steigabschnitt)":" inkl. Zu- und Abstieg"}</span><span>${f0(k.min)}–${f0(k.max)} m</span></div>
+   <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:8px"><p class="txt">${k.text}</p>
+   <svg class="prof" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Höhenprofil"><path d="${d}L${W},${H}L0,${H}Z" fill="currentColor" opacity=".15"/><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>
+   <div class="foot"><a href="${k.tour}" onclick="event.stopPropagation()">Zur Tourseite</a><a href="${k.gpx}" download onclick="event.stopPropagation()">GPX</a><a href="${k.src[1]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Beschreibung (${k.src[0]})</a></div></div>`;
+  const go=()=>{document.querySelectorAll(".ks").forEach((c,j)=>c.classList.toggle("on",j===i));map.fitBounds(L.latLngBounds(k.pts),{padding:[30,30],maxZoom:16});if(matchMedia("(max-width:860px)").matches)document.getElementById("map").scrollIntoView({behavior:"smooth"});};
+  el.addEventListener("click",go);el.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();go()}});list.appendChild(el);});
+map.fitBounds(L.latLngBounds(K.flatMap(k=>k.pts)),{padding:[30,30]});
+</script>
+</body>
+</html>

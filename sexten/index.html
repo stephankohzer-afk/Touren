@@ -71,7 +71,7 @@ svg.prof{display:block;width:100%;height:56px}
   <div id="map" role="region" aria-label="Karte"></div>
   <aside>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <a href="../" style="font-size:.85rem">← Alle Touren</a>
+      <a id="back" href="../" style="font-size:.85rem">← Alle Touren</a>
       <div class="eyebrow" id="eyebrow"></div>
       <h1><span class="blaze" aria-hidden="true"><i></i><i></i><i></i></span><span id="title"></span></h1>
       <p class="lead" id="lead"></p>
@@ -90,11 +90,13 @@ const f0=n=>Math.round(n).toLocaleString("de-DE");
 const hm=s=>{const h=Math.floor(s/3600),m=Math.round((s%3600)/60);return h+":"+String(m).padStart(2,"0")+" h"};
 function dec(s,f){let i=0,v=[0,0];const o=[];while(i<s.length){for(let k=0;k<2;k++){let r=0,sh=0,b;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5}while(b>=32);v[k]+=(r&1)?~(r>>1):(r>>1);}o.push([v[0]/f,v[1]/f]);}return o;}
 document.getElementById("title").textContent=T.title;
+if(T.back){const b=document.getElementById("back");b.href=T.back.url;b.textContent="← "+T.back.label;}
 document.getElementById("eyebrow").textContent=T.eyebrow;
 document.getElementById("lead").textContent=T.lead;
 const main=T.stages.filter(s=>!s.extra);
 const sum=T.stages.reduce((a,s)=>({km:a.km+s.km,up:a.up+s.up,dn:a.dn+s.dn,mv:a.mv+s.dur}),{km:0,up:0,dn:0,mv:0});
-document.getElementById("tot").innerHTML=`<span><b>${main.length}</b> Tage</span><span><b>${fmt(sum.km)}</b> km</span><span><b>${f0(sum.up)}</b> hm ↑</span><span><b>${f0(sum.dn)}</b> hm ↓</span><span><b>${hm(sum.mv)}</b> unterwegs</span><span>höchster Punkt <b>${f0(Math.max(...T.stages.map(s=>s.max)))} m</b></span>`;
+const nd=new Set(main.map(s=>s.date)).size;
+document.getElementById("tot").innerHTML=`<span><b>${nd}</b> ${nd===1?"Tag":"Tage"}</span><span><b>${fmt(sum.km)}</b> km</span><span><b>${f0(sum.up)}</b> hm ↑</span><span><b>${f0(sum.dn)}</b> hm ↓</span><span><b>${hm(sum.mv)}</b> unterwegs</span><span>höchster Punkt <b>${f0(Math.max(...T.stages.map(s=>s.max)))} m</b></span>`;
 const LK=[`<a href="${T.slug}-alle.gpx" download>GPX (alle Tage)</a>`];
 if(T.source)LK.push(`<a href="${T.source.url}" target="_blank" rel="noopener">${T.source.label}</a>`);
 if(T.planLink)LK.push(`<a href="${T.planLink.url}">${T.planLink.label}</a>`);
