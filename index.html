@@ -39,6 +39,7 @@ p{margin:0;color:var(--muted);max-width:62ch}
 .actions a{font-family:var(--f-display);font-weight:600;font-size:1.05rem;letter-spacing:.02em;text-decoration:none;border-radius:6px;padding:7px 14px;border:1px solid var(--ink);color:var(--ink)}
 .actions a.primary{background:var(--ink);color:var(--bg)}
 .actions a:focus-visible{outline:3px solid var(--trail);outline-offset:2px}
+.sec{font-size:1.1rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:8px}
 footer{font-size:.82rem;color:var(--muted)}
 footer a{color:inherit}
 </style>
@@ -48,18 +49,35 @@ footer a{color:inherit}
   <header style="display:flex;flex-direction:column;gap:8px">
     <div class="eyebrow">Karten · GPX · Alpen</div>
     <h1><span class="blaze" aria-hidden="true"><i></i><i></i><i></i></span>Hüttentouren</h1>
-    <p>Wegverläufe aus OpenStreetMap, auf Topo-Karte gezeichnet. Die GPX-Dateien lassen sich in Komoot, Outdooractive, alpenvereinaktiv oder auf GPS-Uhren laden.</p>
+    <p>Gegangene Touren mit Garmin-Track, geplante mit Wegverlauf aus OpenStreetMap, alles auf Topo-Karte. Die GPX-Dateien lassen sich in Komoot, Outdooractive, alpenvereinaktiv oder auf GPS-Uhren laden.</p>
   </header>
 
+  <h2 class="sec">Gegangen 2026</h2>
+  <article class="tour">
+    <div class="eyebrow">Nationalpark Hohe Tauern · Schobergruppe · Juli 2026</div>
+    <h2>Hohe-Tauern-Runde</h2>
+    <div class="meta"><span><b>6</b> Tage</span><span><b>60,5</b> km</span><span><b>4.672</b> hm ↑</span><span>höchster Punkt <b>3.127 m</b></span></div>
+    <div class="huts"><span>Glorer Hütte</span><em>→</em><span>Elberfelder Hütte</span><em>→</em><span>Noßberger Hütte</span><em>→</em><span>Wangenitzseehütte</span><em>→</em><span>Hochschoberhütte</span></div>
+    <p>Von Kals bis St. Johann im Walde, mit Hornscharte und Gradenscharte.</p>
+    <div class="actions"><a class="primary" href="hohe-tauern/">Karte öffnen</a><a href="hohe-tauern/hohe-tauern-alle.gpx" download>GPX</a></div>
+  </article>
+  <article class="tour">
+    <div class="eyebrow">Sextener Dolomiten · Fanes-Sennes-Prags · August 2026</div>
+    <h2>Sextener-Dolomiten-Runde</h2>
+    <div class="meta"><span><b>6</b> Tage</span><span><b>77,6</b> km</span><span><b>4.466</b> hm ↑</span><span>höchster Punkt <b>2.818 m</b></span></div>
+    <div class="huts"><span>Zsigmondyhütte</span><em>→</em><span>Lavaredohütte</span><em>→</em><span>Plätzwiese</span><em>→</em><span>Senneshütte</span><em>→</em><span>Pragser Wildsee</span></div>
+    <p>Vom Fischleintal über die Drei Zinnen nach Sennes, mit Seekofel.</p>
+    <div class="actions"><a class="primary" href="sexten/">Karte öffnen</a><a href="sexten/sexten-alle.gpx" download>GPX</a></div>
+  </article>
   <article class="tour">
     <div class="eyebrow">Dolomiten · Rosengarten · Herbst 2026</div>
     <h2>Rosengarten-Runde</h2>
-    <div class="meta"><span><b>5</b> Tage</span><span><b>3</b> Wandertage</span><span>ca. <b>32</b> km</span><span>höchster Punkt <b>3.004 m</b> (Kesselkogel)</span></div>
+    <div class="meta"><span><b>4</b> Tage</span><span><b>37,9</b> km</span><span><b>3.518</b> hm ↑</span><span>höchster Punkt <b>2.894 m</b></span></div>
     <div class="huts"><span>Kölner Hütte</span><em>→</em><span>Tierser Alpl</span><em>→</em><span>Antermoiahütte</span><em>→</em><span>Kölner Hütte</span></div>
-    <p>Rundtour ab Welschnofen über Santnerpass und Kesselkogel, mit Optionen für Roterdspitze, Ciaresole-Höhenweg und Laurenzi-Klettersteig.</p>
-    <div class="actions"><a class="primary" href="rosengarten/">Karte öffnen</a><a href="rosengarten/gpx/C_ALLE_Tracks_und_Wegpunkte.gpx" download>GPX (alle Tracks)</a></div>
+    <p>Rundtour ab Welschnofen über Santnerpass und Laurenzi-Klettersteig. Mit Planungskarte aller Varianten.</p>
+    <div class="actions"><a class="primary" href="rosengarten/">Karte öffnen</a><a href="rosengarten/rosengarten-alle.gpx" download>GPX</a></div>
   </article>
-
+  <h2 class="sec">Geplant</h2>
   <article class="tour">
     <div class="eyebrow">Stubaier &amp; Ötztaler Alpen · DAV Bonn</div>
     <h2>Hochstubai-Runde</h2>
@@ -69,7 +87,7 @@ footer a{color:inherit}
     <div class="actions"><a class="primary" href="hochstubai/">Karte öffnen</a><a href="hochstubai/hochstubai-runde.gpx" download>GPX</a></div>
   </article>
 
-  <footer>Kartendaten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende (ODbL) · Kartenbild © <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA). Planungshilfe, kein Ersatz für AV-Karte und aktuelle Verhältnisse.</footer>
+  <footer>Kartendaten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende (ODbL) · Kartenbild © <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA). Keine Navigationshilfe, kein Ersatz für AV-Karte und aktuelle Verhältnisse.</footer>
 </main>
 </body>
 </html>
